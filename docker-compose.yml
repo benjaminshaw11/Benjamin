@@ -12,6 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -20,6 +25,11 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -30,18 +40,27 @@ services:
       - "5000:5000"
     environment:
       NODE_ENV: development
+      PORT: 5000
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: betting_platform
       DB_USER: postgres
       DB_PASSWORD: password
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: your_jwt_secret_change_in_production
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
+      FRONTEND_URL: http://localhost:5173
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
+    networks:
+      - betting_network
 
   frontend:
     build:
@@ -50,14 +69,20 @@ services:
     container_name: betting_frontend
     ports:
       - "5173:5173"
-    depends_on:
-      - backend
     environment:
       VITE_API_BASE: http://localhost:5000/api
+    depends_on:
+      - backend
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    networks:
+      - betting_network
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  betting_network:
+    driver: bridge
