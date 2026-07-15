@@ -1,3 +1,4 @@
+// backend/src/models/Transaction.js
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -10,14 +11,17 @@ module.exports = (sequelize) => {
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
-      references: {
-        model: 'Users',
-        key: 'id'
-      }
+      field: 'user_id'
     },
-    type: {
-      type: DataTypes.ENUM('deposit', 'withdrawal', 'bet', 'win', 'refund'),
-      allowNull: false
+    walletId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: 'wallet_id'
+    },
+    transactionType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'transaction_type'
     },
     amount: {
       type: DataTypes.DECIMAL(15, 2),
@@ -25,22 +29,38 @@ module.exports = (sequelize) => {
     },
     currency: {
       type: DataTypes.STRING,
-      defaultValue: 'INR'
+      defaultValue: 'USD'
     },
-    status: {
-      type: DataTypes.ENUM('pending', 'completed', 'failed', 'cancelled'),
-      defaultValue: 'pending'
+    balanceBefore: {
+      type: DataTypes.DECIMAL(15, 2),
+      field: 'balance_before'
+    },
+    balanceAfter: {
+      type: DataTypes.DECIMAL(15, 2),
+      field: 'balance_after'
     },
     paymentMethod: {
       type: DataTypes.STRING,
-      allowNull: true
+      field: 'payment_method'
     },
-    reference: {
+    referenceId: {
       type: DataTypes.STRING,
-      allowNull: true
+      field: 'reference_id'
+    },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: 'pending'
     },
     description: DataTypes.TEXT
+  }, {
+    tableName: 'transactions',
+    timestamps: true
   });
+
+  Transaction.associate = (models) => {
+    Transaction.belongsTo(models.User, { foreignKey: 'userId' });
+    Transaction.belongsTo(models.Wallet, { foreignKey: 'walletId' });
+  };
 
   return Transaction;
 };

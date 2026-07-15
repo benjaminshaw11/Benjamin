@@ -1,6 +1,8 @@
+// backend/src/middleware/auth.js
 const jwt = require('jsonwebtoken');
+const { UserSession } = require('../models');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     
@@ -9,18 +11,24 @@ const authMiddleware = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    
+    const session = await UserSession.findOne({
+      where: {
+        sessionToken: token,
+        isActive: true
+      }
+    });
+
+    if (!session) {
+      return res.status(401).json({ error: 'Invalid or expired session' });
+    }
+
+    req.userId = decoded.userId;
+    req.sessionId = session.id;
     next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+  } catch (error) {
+    res.status(401).json({ error: 'Authentication failed', message: error.message });
   }
 };
 
-const adminMiddleware = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
-  next();
-};
-
-module.exports = { authMiddleware, adminMiddleware };
+module.exports = authMiddleware;
