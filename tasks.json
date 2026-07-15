@@ -3,44 +3,110 @@
     {
       "id": 1,
       "title": "Complete project setup",
+      "description": "Set up all necessary project configurations and dependencies",
       "priority": "high",
       "status": "pending",
+      "category": "Setup",
+      "tags": ["setup", "urgent"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-20"
     },
     {
       "id": 2,
       "title": "Configure development environment",
+      "description": "Set up local development environment with all required tools",
       "priority": "high",
       "status": "pending",
+      "category": "Setup",
+      "tags": ["setup", "urgent"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-18"
     },
     {
       "id": 3,
       "title": "Set up CI/CD pipeline",
+      "description": "Configure continuous integration and deployment pipeline",
       "priority": "high",
       "status": "pending",
+      "category": "DevOps",
+      "tags": ["cicd", "infrastructure"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-22"
     },
     {
       "id": 4,
       "title": "Review code documentation",
+      "description": "Review and update all code documentation and comments",
       "priority": "medium",
       "status": "pending",
+      "category": "Documentation",
+      "tags": ["docs", "review"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-25"
     },
     {
       "id": 5,
       "title": "Optimize performance",
+      "description": "Identify and fix performance bottlenecks",
       "priority": "medium",
       "status": "pending",
+      "category": "Performance",
+      "tags": ["optimization", "performance"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-28"
     },
     {
       "id": 6,
       "title": "Add unit tests",
+      "description": "Write comprehensive unit tests for all modules",
       "priority": "medium",
       "status": "pending",
+      "category": "Testing",
+      "tags": ["testing", "quality"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
       "dueDate": "2026-07-30"
+    },
+    {
+      "id": 7,
+      "title": "Update README",
+      "description": "Update README with project information and setup instructions",
+      "priority": "low",
+      "status": "pending",
+      "category": "Documentation",
+      "tags": ["docs", "readme"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
+      "dueDate": "2026-08-05"
+    },
+    {
+      "id": 8,
+      "title": "Add comments to code",
+      "description": "Add detailed comments to complex code sections",
+      "priority": "low",
+      "status": "pending",
+      "category": "Documentation",
+      "tags": ["docs", "code"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
+      "dueDate": "2026-08-08"
+    },
+    {
+      "id": 9,
+      "title": "Create contributing guidelines",
+      "description": "Document contribution guidelines for team members",
+      "priority": "low",
+      "status": "pending",
+      "category": "Documentation",
+      "tags": ["docs", "guidelines"],
+      "assignee": "unassigned",
+      "createdDate": "2026-07-15",
+      "dueDate": "2026-08-10"
     }
   ]
 }
