@@ -1,6 +1,21 @@
-# 🎰 Full-Stack Betting Platform
+# 🎰 Benjamin - Full-Stack Betting Platform
 
-A complete betting platform with **Casinos**, **Sports Betting**, **Virtual Games**, **Prediction Markets**, and **INR Payments**.
+A complete betting platform with **Casinos**, **Sports Betting**, **Virtual Games**, **Prediction Markets**, and **INR Payments**. Also includes a bonus **To-Do List Application** with local storage.
+
+## 📑 Table of Contents
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [API Documentation](#api-documentation)
+- [To-Do List App](#to-do-list-app)
+- [Documentation](#documentation)
+- [Environment Variables](#environment-variables)
+- [Game Fair Play Rules](#game-fair-play-rules)
+- [Deployment](#deployment)
+- [Legal Notice](#legal-notice)
+- [Contributing](#contributing)
+
+---
 
 ## Features
 
@@ -30,10 +45,12 @@ A complete betting platform with **Casinos**, **Sports Betting**, **Virtual Game
 - **Payment**: Razorpay API
 - **Database**: PostgreSQL with Sequelize ORM
 
+---
+
 ## Project Structure
 
 ```
-betting-platform/
+Benjamin/
 ├── backend/                 # Node.js/Express API
 │   ├── src/
 │   │   ├── controllers/    # Game logic, betting
@@ -57,10 +74,23 @@ betting-platform/
 │   │   └── App.tsx
 │   ├── package.json
 │   └── vite.config.ts
+├── todo-app/               # 📋 To-Do List Application
+│   ├── index.html         # Main HTML file
+│   ├── styles.css         # Styling
+│   ├── app.js             # JavaScript logic
+│   └── README.md          # To-Do app documentation
+├── docs/                  # 📚 Complete Documentation
+│   ├── API.md             # 21+ API endpoints with examples
+│   ├── CURL_EXAMPLES.md   # Ready-to-use cURL commands
+│   ├── JAVASCRIPT_EXAMPLES.md  # Frontend integration code
+│   ├── GAME_FLOW_DIAGRAMS.md   # ASCII flowcharts & walkthroughs
+│   ├── TESTING_GUIDE.md        # Testing & fairness verification
+│   └── ERROR_HANDLING.md       # Common errors & solutions
 ├── docker-compose.yml     # Docker setup
-└── docs/                  # Documentation
-
+└── README.md             # This file
 ```
+
+---
 
 ## Quick Start
 
@@ -68,6 +98,7 @@ betting-platform/
 - Node.js 16+
 - PostgreSQL
 - Git
+- Docker (optional)
 
 ### Installation
 
@@ -88,6 +119,9 @@ npm start
 cd frontend
 npm install
 npm run dev
+
+# To-Do List App (open in browser)
+open todo-app/index.html
 ```
 
 ### Docker Setup
@@ -95,35 +129,106 @@ npm run dev
 docker-compose up -d
 ```
 
+---
+
 ## API Documentation
 
-Base URL: `http://localhost:5000/api`
+**Base URL**: `http://localhost:5000/api`
 
-### Authentication
-- POST `/auth/register` - User registration
-- POST `/auth/login` - User login
-- POST `/auth/refresh` - Refresh token
+### Authentication Endpoints
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh token
 
-### Games
-- GET `/games` - List available games
-- POST `/games/:gameId/bet` - Place a bet
-- GET `/games/:gameId/history` - Bet history
+### Games Endpoints
+- `GET /games` - List available games
+- `GET /games/:gameId` - Get game details
+- `POST /games/:gameId/bet` - Place a bet
+- `GET /games/:gameId/history` - Bet history
 
-### Wallet
-- GET `/wallet/balance` - Get balance
-- POST `/wallet/deposit` - Initiate deposit
-- POST `/wallet/withdraw` - Request withdrawal
-- GET `/wallet/transactions` - Transaction history
+### Wallet Endpoints
+- `GET /wallet/balance` - Get balance
+- `POST /wallet/deposit` - Initiate deposit
+- `POST /wallet/verify-deposit` - Verify deposit
+- `POST /wallet/withdraw` - Request withdrawal
+- `GET /wallet/transactions` - Transaction history
 
-### Sports Betting
-- GET `/sports/odds` - Get live odds
-- POST `/sports/bet` - Place sports bet
-- GET `/sports/markets` - Available markets
+### Sports Betting Endpoints
+- `GET /sports/odds` - Get live odds
+- `GET /sports/markets` - Available markets
+- `POST /sports/bet` - Place sports bet
+- `GET /sports/bets` - Betting history
 
-### Admin
-- GET `/admin/dashboard` - Dashboard stats
-- GET `/admin/users` - User management
-- POST `/admin/games/odds` - Update odds
+### Admin Endpoints
+- `GET /admin/dashboard` - Dashboard stats
+- `GET /admin/users` - User management
+- `POST /admin/users/:userId/suspend` - Suspend user
+- `POST /admin/games/odds` - Update game odds
+
+### Analytics Endpoints
+- `GET /analytics/user/:userId` - User analytics
+
+📖 **For complete API documentation with examples, see** [docs/API.md](docs/API.md)
+
+---
+
+## To-Do List App
+
+### 📋 What's Included
+
+A **full-featured To-Do List Application** with:
+
+✨ **Core Features**
+- Add, edit, delete tasks
+- Mark tasks as complete/incomplete
+- Auto-save to Local Storage
+- Search and filter (All, Active, Completed)
+- Sort by Date, Priority, or Name
+
+🎯 **Advanced Features**
+- Priority levels (Low, Medium, High)
+- Real-time statistics (Total, Completed, Pending, %)
+- Import tasks from JSON
+- Export tasks to JSON file
+- Beautiful responsive design
+- Toast notifications for actions
+
+### 🚀 Getting Started
+
+```bash
+# Simply open in your browser
+open todo-app/index.html
+```
+
+### 📂 Files
+- `todo-app/index.html` - HTML structure with UI elements
+- `todo-app/styles.css` - Beautiful styling & animations
+- `todo-app/app.js` - Complete JavaScript logic (TodoApp class)
+- `todo-app/README.md` - Full To-Do app documentation
+
+### 💾 Local Storage Usage
+- Tasks are automatically saved to browser's local storage
+- Format: `localStorage.setItem('todos', JSON.stringify(tasks))`
+- No server required - works offline!
+
+📖 **For complete To-Do app documentation, see** [todo-app/README.md](todo-app/README.md)
+
+---
+
+## Documentation
+
+Complete documentation is available in the `docs/` folder:
+
+| Document | Description |
+|----------|-------------|
+| 📖 [API.md](docs/API.md) | 21+ endpoints with request/response examples |
+| 🔧 [CURL_EXAMPLES.md](docs/CURL_EXAMPLES.md) | Ready-to-use cURL commands for all endpoints |
+| 💻 [JAVASCRIPT_EXAMPLES.md](docs/JAVASCRIPT_EXAMPLES.md) | Frontend integration with React components |
+| 📊 [GAME_FLOW_DIAGRAMS.md](docs/GAME_FLOW_DIAGRAMS.md) | Visual flowcharts and step-by-step walkthroughs |
+| 🧪 [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | Testing procedures and fairness verification |
+| ⚠️ [ERROR_HANDLING.md](docs/ERROR_HANDLING.md) | Common errors with solutions |
+
+---
 
 ## Environment Variables
 
@@ -151,20 +256,29 @@ JWT_EXPIRY=7d
 REDIS_URL=redis://localhost:6379
 ```
 
+---
+
 ## Game Fair Play Rules
 
 ### House Edge Configuration
-- Dice: 5%
-- Roulette: 2.7%
-- Slots: 8%
-- Crash: 3%
-- Color Prediction: 5%
+| Game | House Edge |
+|------|-----------|
+| Dice | 5% |
+| Roulette | 2.7% |
+| Slots | 8% |
+| Crash | 3% |
+| Color Prediction | 5% |
 
 ### Provably Fair System
-- Seed-based RNG for verifiable results
-- Client seed combination
-- Server seed hash verification
-- Transparent calculation
+- ✅ Seed-based RNG for verifiable results
+- ✅ Client seed combination
+- ✅ Server seed hash verification
+- ✅ Transparent calculation
+- ✅ User verification possible
+
+📖 **For detailed fairness testing, see** [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)
+
+---
 
 ## Deployment
 
@@ -174,7 +288,20 @@ git push heroku main
 ```
 
 ### AWS/DigitalOcean
-See `docs/deployment.md`
+```bash
+# Build Docker image
+docker build -t benjamin .
+
+# Run container
+docker run -p 5000:5000 benjamin
+```
+
+### Docker Compose
+```bash
+docker-compose up -d
+```
+
+---
 
 ## Legal Notice
 
@@ -185,7 +312,9 @@ See `docs/deployment.md`
 - Responsible gambling features
 - Data protection compliance (GDPR, etc.)
 
-Consult legal professionals before deployment.
+**Consult legal professionals before deployment.**
+
+---
 
 ## Contributing
 
@@ -195,16 +324,33 @@ Consult legal professionals before deployment.
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
 
+---
+
 ## License
 
 MIT License - see LICENSE.md
 
+---
+
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/benjaminshaw11/Benjamin/issues
-- Email: support@bettingplatform.com
+- 📋 GitHub Issues: https://github.com/benjaminshaw11/Benjamin/issues
+- 📧 Email: support@bettingplatform.com
+- 📚 Documentation: See `docs/` folder
 
 ---
 
-**Built with ❤️ for next-gen betting platforms**
+## Quick Links
+
+- 🎰 **Betting Platform** - Full-stack gaming platform
+- 📋 **To-Do App** - Productivity tool with local storage
+- 📖 **API Docs** - Complete endpoint documentation
+- 🧪 **Testing Guide** - Fairness verification procedures
+- 💻 **Code Examples** - JavaScript, cURL, and more
+
+---
+
+**Built with ❤️ for next-gen betting platforms and productivity tools**
+
+**Last Updated**: 2026-07-15
