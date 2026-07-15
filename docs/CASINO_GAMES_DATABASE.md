@@ -1,6 +1,6 @@
-# 🎰 200+ Casino Games Database
+# 🎰 300+ Casino & Sports Platform Database
 
-## Complete Casino Games Catalog
+## Complete Casino Games & Sports Betting Catalog
 
 ### 1. TABLE GAMES (35+ games)
 
@@ -285,28 +285,306 @@
 
 ---
 
-## Game Metadata Structure
+### 7. SPORTS BETTING (100+ betting markets)
+
+#### Football/Soccer (30+ markets)
+**Leagues:**
+- Premier League
+- La Liga
+- Serie A
+- Bundesliga
+- Ligue 1
+- Champions League
+- Europa League
+- International (World Cup, Euro, Copa América)
+- MLS
+- J-League
+- Indian Super League
+
+**Bet Types:**
+- Match Winner (1X2)
+- Double Chance
+- Draw No Bet
+- Correct Score
+- Both Teams to Score (BTTS)
+- Over/Under Goals
+- Handicap Betting
+- First Half/Full Time
+- First Goal Scorer
+- Last Goal Scorer
+- Halftime Winner
+- Asian Handicap
+- Corners Over/Under
+- Cards Over/Under
+- Penalties to be Taken
+- Exact Goal Time
+- Goal Range
+- Team to Score in Both Halves
+
+#### Basketball (20+ markets)
+**Leagues:**
+- NBA
+- EuroBasket
+- FIBA World Cup
+- Olympic Games
+- ABA League
+- Australian NBL
+- CBA (China)
+
+**Bet Types:**
+- Full Game Winner
+- Spread Betting
+- Over/Under Points
+- Quarter Winner
+- Half Time/Full Time
+- First Half Spread
+- Player Points Over/Under
+- Team Total Points
+- 3-Point Line Bets
+- Highest Scoring Team
+- Leading After Q1/Q2/Q3
+
+#### Tennis (15+ markets)
+**Events:**
+- Grand Slams (Wimbledon, US Open, Australian Open, French Open)
+- ATP Masters 1000
+- ATP 500/250
+- WTA 1000/500/250
+- Olympics
+- Billie Jean King Cup
+- Davis Cup
+
+**Bet Types:**
+- Match Winner
+- Set Betting
+- Correct Score
+- First Set Winner
+- Game Betting
+- Tie-Break Betting
+- Over/Under Games
+- Set Spread
+- Match Handicap
+- Player Combination Bets
+
+#### Cricket (25+ markets)
+**Formats & Events:**
+- Test Matches
+- One Day Internationals (ODI)
+- T20 Internationals
+- Indian Premier League (IPL)
+- Big Bash League
+- Pakistan Super League
+- Caribbean Premier League
+- T20 World Cup
+- World Cup
+- County Cricket
+
+**Bet Types:**
+- Match Winner
+- Series Winner
+- Tournament Winner
+- Top Batsman
+- Top Bowler
+- Highest Individual Score
+- Total Runs in Innings
+- Runs in Over
+- Wickets to Fall
+- Method of Victory
+- Toss Winner
+- Man of Match
+- Dismissal Type
+- Boundary Count
+- Sixes Count
+
+#### Baseball (15+ markets)
+**Leagues:**
+- MLB (Major League Baseball)
+- Minor League Baseball
+- World Series
+- All-Star Games
+- Olympics
+
+**Bet Types:**
+- Moneyline
+- Spread Betting
+- Over/Under Runs
+- Run Line
+- Team Total Runs
+- First 5 Innings Winner
+- Inning Winner
+- Home Run Bets
+- Strikeout Props
+- RBI Over/Under
+
+#### American Football (20+ markets)
+**Leagues:**
+- NFL (National Football League)
+- College Football
+- Super Bowl
+- Pro Bowls
+
+**Bet Types:**
+- Moneyline
+- Spread Betting
+- Over/Under Points
+- Point Total
+- Half/Quarter Betting
+- First Touchdown
+- Last Touchdown
+- Field Goal Distance Betting
+- Turnover Props
+- Rushing Yards
+- Passing Yards
+- Reception Props
+
+#### Ice Hockey (15+ markets)
+**Leagues:**
+- NHL (National Hockey League)
+- KHL (Kontinental Hockey League)
+- International Tournaments
+- Olympic Games
+- Stanley Cup
+
+**Bet Types:**
+- Moneyline
+- Puck Line (Spread)
+- Over/Under Goals
+- First Period Winner
+- Period Betting
+- Goal Scorer Bets
+- Assist Bets
+- Penalty Props
+- Shootout Betting
+
+#### Rugby (10+ markets)
+**Leagues:**
+- Six Nations
+- Rugby World Cup
+- Super Rugby
+- Top 14
+- Premiership
+- Pro14
+
+**Bet Types:**
+- Match Winner
+- Handicap Betting
+- Over/Under Points
+- First Half Winner
+- Try Scorer
+- Half Time/Full Time
+- Correct Score
+- Winning Margin
+
+#### Horse Racing (15+ markets)
+**Types:**
+- Flat Racing
+- National Hunt (Steeplechase)
+- Harness Racing
+- Major Events (Ascot, Cheltenham, Kentucky Derby, Grand National)
+
+**Bet Types:**
+- Win
+- Place
+- Each Way
+- Exacta
+- Quinella
+- Trifecta
+- Superfecta
+- Forecast
+- Tricast
+- Multi-Bet Accumulator
+- Show Betting
+- Photo Finish Bets
+
+#### Golf (10+ markets)
+**Events:**
+- PGA Tour
+- European Tour
+- Major Championships (The Masters, US Open, Open Championship, PGA Championship)
+- Ryder Cup
+- Olympics
+
+**Bet Types:**
+- Outright Winner
+- Top 10 Finish
+- Top 20 Finish
+- Head-to-Head
+- Group Betting
+- Round Leader
+- Course Bets
+- Round Scoring
+- Hole Betting
+
+#### Esports (20+ markets)
+**Games & Events:**
+- Counter-Strike: Global Offensive
+- League of Legends
+- Dota 2
+- Valorant
+- StarCraft II
+- Fortnite
+- Call of Duty
+- Overwatch
+- PUBG
+- Fighting Games (Street Fighter, Tekken)
+- International Tournaments
+- Regional Competitions
+
+**Bet Types:**
+- Match Winner
+- Map Winner
+- Series Winner
+- Tournament Winner
+- Kill Count
+- Plant/Defuse Props
+- Round Betting
+- Handicap Betting
+- First Blood
+- MVP Betting
+
+---
+
+## Sports Betting Metadata Structure
 
 ```json
 {
-  "id": "game_001",
-  "name": "Classic Blackjack",
-  "category": "table_games",
-  "subcategory": "blackjack",
-  "description": "Traditional blackjack game",
-  "thumbnail": "url_to_image",
-  "minBet": 1,
-  "maxBet": 10000,
-  "rtp": 99.5,
-  "houseEdge": 0.5,
-  "volatility": "low",
+  "id": "sport_001",
+  "name": "Premier League - Manchester United vs Liverpool",
+  "category": "sports_betting",
+  "sport": "football",
+  "league": "Premier League",
+  "homeTeam": "Manchester United",
+  "awayTeam": "Liverpool",
+  "eventDate": "2026-08-15T19:00:00Z",
+  "status": "upcoming",
+  "betTypes": [
+    {
+      "betType": "match_winner",
+      "odds": {
+        "home": 2.10,
+        "draw": 3.40,
+        "away": 3.50
+      },
+      "minBet": 1,
+      "maxBet": 10000
+    },
+    {
+      "betType": "over_under",
+      "line": 2.5,
+      "odds": {
+        "over": 1.95,
+        "under": 1.90
+      },
+      "minBet": 1,
+      "maxBet": 10000
+    }
+  ],
   "provider": "internal",
-  "popularity": 95,
-  "isLive": false,
-  "hasProgressive": false,
-  "maxPayout": 100000,
-  "theme": "classic",
-  "tags": ["blackjack", "card", "skill"],
+  "popularity": 98,
+  "hasLiveStreaming": true,
+  "hasLiveBetting": true,
+  "maxPayout": 500000,
+  "tags": ["football", "premier-league", "live"],
   "status": "active"
 }
 ```
@@ -315,11 +593,54 @@
 
 ## Statistics
 
-- **Total Games**: 200+
-- **Table Games**: 35
-- **Slot Machines**: 85
-- **Virtual Games**: 40
-- **Specialty Games**: 25
-- **Live Dealer**: 10
-- **Progressive Jackpot**: 20
+- **Total Offerings**: 300+
+- **Casino Games**: 200+
+  - Table Games: 35
+  - Slot Machines: 85
+  - Virtual Games: 40
+  - Specialty Games: 25
+  - Live Dealer: 10
+  - Progressive Jackpot: 20
+- **Sports Betting**: 100+
+  - Football/Soccer: 30+ markets
+  - Basketball: 20+ markets
+  - Cricket: 25+ markets
+  - Tennis: 15+ markets
+  - American Football: 20+ markets
+  - Baseball: 15+ markets
+  - Ice Hockey: 15+ markets
+  - Horse Racing: 15+ markets
+  - Rugby: 10+ markets
+  - Golf: 10+ markets
+  - Esports: 20+ markets
 
+---
+
+## Features
+
+### Casino Features
+- RNG-certified games with provably fair algorithms
+- Multiple bet levels (low to high stakes)
+- Live dealer support for premium games
+- Progressive jackpots
+- VIP/loyalty programs
+- Demo play mode
+- Responsible gaming tools
+
+### Sports Betting Features
+- Live in-play betting (during matches)
+- Live streaming integration
+- Real-time odds updates
+- Cash out functionality
+- Parlay/Accumulator bets
+- Injury/team news updates
+- Expert predictions
+- Historical statistics & analytics
+- Mobile-optimized interface
+- Push notifications for odds changes
+- Responsible betting limits
+
+---
+
+**Last Updated**: 2026-07-15
+**Platform**: Benjamin Casino & Sports Betting
