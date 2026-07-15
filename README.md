@@ -1,356 +1,218 @@
-# 🎰 Benjamin - Full-Stack Betting Platform
+# Benjamin
 
-A complete betting platform with **Casinos**, **Sports Betting**, **Virtual Games**, **Prediction Markets**, and **INR Payments**. Also includes a bonus **To-Do List Application** with local storage.
+A comprehensive project management and development repository with full task tracking, progress monitoring, and team collaboration tools.
 
-## 📑 Table of Contents
-- [Features](#features)
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
-- [Quick Start](#quick-start)
-- [API Documentation](#api-documentation)
-- [To-Do List App](#to-do-list-app)
-- [Documentation](#documentation)
-- [Environment Variables](#environment-variables)
-- [Game Fair Play Rules](#game-fair-play-rules)
-- [Deployment](#deployment)
-- [Legal Notice](#legal-notice)
+- [Task Management](#task-management)
+- [Progress Tracking](#progress-tracking)
 - [Contributing](#contributing)
+- [Support](#support)
 
 ---
 
-## Features
+## Overview
 
-### 🎮 Gaming Products
-- **Casinos**: Dice, Roulette, Blackjack, Slots
-- **Sports Betting**: Live odds, Pre-match betting, Multiple markets
-- **Virtual Games**: Crash, Mines, Plinko, Color Prediction
-- **Prediction Markets**: Binary YES/NO event betting
-
-### 💰 Payments & Wallet
-- Razorpay integration for INR deposits/withdrawals
-- Real money only (no demo)
-- Instant settlement
-- Transaction history
-
-### 🔐 Security & Compliance
-- JWT authentication
-- Provably fair RNG for games
-- KYC verification ready
-- Admin dashboard & risk management
-- Responsible gambling features
-
-### 🚀 Technology Stack
-- **Backend**: Node.js, Express, PostgreSQL, WebSocket
-- **Frontend**: React, TypeScript, TailwindCSS
-- **Real-time**: Socket.io for live updates
-- **Payment**: Razorpay API
-- **Database**: PostgreSQL with Sequelize ORM
+This repository contains a complete project management system with:
+- **Task Management**: Organize tasks by priority, category, and assignee
+- **Progress Tracking**: Monitor milestones and project completion
+- **Team Collaboration**: Standardized templates for issues and pull requests
+- **Version Control**: Detailed changelog tracking all changes
+- **Documentation**: Comprehensive guides and contribution guidelines
 
 ---
 
-## Project Structure
+## 🚀 Getting Started
+
+### Prerequisites
+- Git
+- Node.js (v14+) - optional, depending on your project
+- Docker & Docker Compose - optional
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/benjaminshaw11/Benjamin.git
+   cd Benjamin
+   ```
+
+2. **Review the task files**
+   - [TODO.md](./TODO.md) - Quick overview of all tasks
+   - [tasks.json](./tasks.json) - Detailed task metadata
+
+3. **Check project progress**
+   - [PROGRESS.md](./PROGRESS.md) - Current milestones and timeline
+   - [CHANGELOG.md](./CHANGELOG.md) - Version history
+
+4. **Set up development environment**
+   ```bash
+   # Copy environment template
+   cp .env.example .env
+   
+   # Install dependencies (if using Node.js)
+   npm install
+   
+   # Start with Docker Compose (optional)
+   docker-compose up -d
+   ```
+
+---
+
+## 📁 Project Structure
 
 ```
 Benjamin/
-├── backend/                 # Node.js/Express API
-│   ├── src/
-│   │   ├── controllers/    # Game logic, betting
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API endpoints
-│   │   ├── middleware/     # Auth, validation
-│   │   ├── services/       # Business logic
-│   │   ├── utils/          # Helpers, RNG
-│   │   └── config/         # Database, Razorpay
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js
-├── frontend/               # React application
-│   ├── src/
-│   │   ├── components/    # UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom hooks
-│   │   ├── services/      # API calls
-│   │   ├── store/         # State management
-│   │   ├── styles/        # Global styles
-│   │   └── App.tsx
-│   ├── package.json
-│   └── vite.config.ts
-├── todo-app/               # 📋 To-Do List Application
-│   ├── index.html         # Main HTML file
-│   ├── styles.css         # Styling
-│   ├── app.js             # JavaScript logic
-│   └── README.md          # To-Do app documentation
-├── docs/                  # 📚 Complete Documentation
-│   ├── API.md             # 21+ API endpoints with examples
-│   ├── CURL_EXAMPLES.md   # Ready-to-use cURL commands
-│   ├── JAVASCRIPT_EXAMPLES.md  # Frontend integration code
-│   ├── GAME_FLOW_DIAGRAMS.md   # ASCII flowcharts & walkthroughs
-│   ├── TESTING_GUIDE.md        # Testing & fairness verification
-│   └── ERROR_HANDLING.md       # Common errors & solutions
-├── docker-compose.yml     # Docker setup
-└── README.md             # This file
+├── README.md                    # This file
+├── CONTRIBUTING.md              # Contribution guidelines
+├── CODE_OF_CONDUCT.md           # Community standards
+├── SECURITY.md                  # Security policies
+├── LICENSE                      # Project license
+│
+├── TODO.md                      # Task list with milestones
+├── tasks.json                   # Detailed task data
+├── PROGRESS.md                  # Milestone tracking
+├── CHANGELOG.md                 # Version history
+│
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md       # Bug report template
+│   │   └── feature_request.md  # Feature request template
+│   ├── pull_request_template.md # PR submission template
+│   ├── workflows/               # CI/CD workflows
+│   │   ├── tests.yml           # Automated testing
+│   │   ├── lint.yml            # Code linting
+│   │   └── release.yml         # Release automation
+│   └── config.yml              # GitHub configuration
+│
+├── .env.example                 # Environment template
+├── .gitignore                   # Git ignore rules
+│
+├── docs/                        # Documentation
+├── frontend/                    # Frontend code
+├── backend/                     # Backend code
+└── docker-compose.yml           # Docker configuration
 ```
 
 ---
 
-## Quick Start
+## 📊 Task Management
 
-### Prerequisites
-- Node.js 16+
-- PostgreSQL
-- Git
-- Docker (optional)
+### Quick Links
+- **All Tasks**: [TODO.md](./TODO.md)
+- **Detailed Metadata**: [tasks.json](./tasks.json)
 
-### Installation
+### Task Categories
+- **Setup**: Initial project configuration
+- **DevOps**: CI/CD and infrastructure
+- **Documentation**: Guides and comments
+- **Performance**: Optimization tasks
+- **Testing**: Quality assurance
 
-```bash
-# Clone repository
-git clone https://github.com/benjaminshaw11/Benjamin.git
-cd Benjamin
+### Priority Levels
+- 🔴 **High**: Critical tasks needed for milestones
+- 🟡 **Medium**: Important but not blocking
+- 🟢 **Low**: Nice-to-have improvements
 
-# Backend setup
-cd backend
-npm install
-cp .env.example .env
-# Update .env with your Razorpay keys and DB credentials
-npm run migrate
-npm start
+### How to Update Tasks
 
-# Frontend setup (in new terminal)
-cd frontend
-npm install
-npm run dev
+1. **Add a new task** (pick one approach):
+   - Edit [TODO.md](./TODO.md) for quick updates
+   - Edit [tasks.json](./tasks.json) for structured data
 
-# To-Do List App (open in browser)
-open todo-app/index.html
-```
+2. **Mark task as complete**:
+   - Update status in tasks.json: `"status": "completed"`
+   - Check off in TODO.md: `- [x]`
 
-### Docker Setup
-```bash
-docker-compose up -d
-```
+3. **Assign tasks**:
+   - Set assignee in tasks.json
+   - Add yourself or a team member
 
 ---
 
-## API Documentation
+## 📈 Progress Tracking
 
-**Base URL**: `http://localhost:5000/api`
+### Current Status
+- **Total Tasks**: 9
+- **Completion Rate**: 10%
+- **Active Milestones**: 3
 
-### Authentication Endpoints
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Refresh token
+### Milestones
 
-### Games Endpoints
-- `GET /games` - List available games
-- `GET /games/:gameId` - Get game details
-- `POST /games/:gameId/bet` - Place a bet
-- `GET /games/:gameId/history` - Bet history
+| Milestone | Target Date | Status | Progress |
+|-----------|------------|--------|----------|
+| Project Setup | 2026-07-22 | In Progress | 0% |
+| Code Quality | 2026-07-30 | Not Started | 0% |
+| Documentation | 2026-08-10 | Not Started | 0% |
 
-### Wallet Endpoints
-- `GET /wallet/balance` - Get balance
-- `POST /wallet/deposit` - Initiate deposit
-- `POST /wallet/verify-deposit` - Verify deposit
-- `POST /wallet/withdraw` - Request withdrawal
-- `GET /wallet/transactions` - Transaction history
-
-### Sports Betting Endpoints
-- `GET /sports/odds` - Get live odds
-- `GET /sports/markets` - Available markets
-- `POST /sports/bet` - Place sports bet
-- `GET /sports/bets` - Betting history
-
-### Admin Endpoints
-- `GET /admin/dashboard` - Dashboard stats
-- `GET /admin/users` - User management
-- `POST /admin/users/:userId/suspend` - Suspend user
-- `POST /admin/games/odds` - Update game odds
-
-### Analytics Endpoints
-- `GET /analytics/user/:userId` - User analytics
-
-📖 **For complete API documentation with examples, see** [docs/API.md](docs/API.md)
+**View detailed progress**: [PROGRESS.md](./PROGRESS.md)
 
 ---
 
-## To-Do List App
+## 🤝 Contributing
 
-### 📋 What's Included
+We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-A **full-featured To-Do List Application** with:
-
-✨ **Core Features**
-- Add, edit, delete tasks
-- Mark tasks as complete/incomplete
-- Auto-save to Local Storage
-- Search and filter (All, Active, Completed)
-- Sort by Date, Priority, or Name
-
-🎯 **Advanced Features**
-- Priority levels (Low, Medium, High)
-- Real-time statistics (Total, Completed, Pending, %)
-- Import tasks from JSON
-- Export tasks to JSON file
-- Beautiful responsive design
-- Toast notifications for actions
-
-### 🚀 Getting Started
-
-```bash
-# Simply open in your browser
-open todo-app/index.html
-```
-
-### 📂 Files
-- `todo-app/index.html` - HTML structure with UI elements
-- `todo-app/styles.css` - Beautiful styling & animations
-- `todo-app/app.js` - Complete JavaScript logic (TodoApp class)
-- `todo-app/README.md` - Full To-Do app documentation
-
-### 💾 Local Storage Usage
-- Tasks are automatically saved to browser's local storage
-- Format: `localStorage.setItem('todos', JSON.stringify(tasks))`
-- No server required - works offline!
-
-📖 **For complete To-Do app documentation, see** [todo-app/README.md](todo-app/README.md)
-
----
-
-## Documentation
-
-Complete documentation is available in the `docs/` folder:
-
-| Document | Description |
-|----------|-------------|
-| 📖 [API.md](docs/API.md) | 21+ endpoints with request/response examples |
-| 🔧 [CURL_EXAMPLES.md](docs/CURL_EXAMPLES.md) | Ready-to-use cURL commands for all endpoints |
-| 💻 [JAVASCRIPT_EXAMPLES.md](docs/JAVASCRIPT_EXAMPLES.md) | Frontend integration with React components |
-| 📊 [GAME_FLOW_DIAGRAMS.md](docs/GAME_FLOW_DIAGRAMS.md) | Visual flowcharts and step-by-step walkthroughs |
-| 🧪 [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | Testing procedures and fairness verification |
-| ⚠️ [ERROR_HANDLING.md](docs/ERROR_HANDLING.md) | Common errors with solutions |
-
----
-
-## Environment Variables
-
-```env
-# Server
-PORT=5000
-NODE_ENV=development
-
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=betting_platform
-DB_USER=postgres
-DB_PASSWORD=your_password
-
-# Razorpay
-RAZORPAY_KEY_ID=your_key
-RAZORPAY_KEY_SECRET=your_secret
-
-# JWT
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRY=7d
-
-# Redis
-REDIS_URL=redis://localhost:6379
-```
-
----
-
-## Game Fair Play Rules
-
-### House Edge Configuration
-| Game | House Edge |
-|------|-----------|
-| Dice | 5% |
-| Roulette | 2.7% |
-| Slots | 8% |
-| Crash | 3% |
-| Color Prediction | 5% |
-
-### Provably Fair System
-- ✅ Seed-based RNG for verifiable results
-- ✅ Client seed combination
-- ✅ Server seed hash verification
-- ✅ Transparent calculation
-- ✅ User verification possible
-
-📖 **For detailed fairness testing, see** [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)
-
----
-
-## Deployment
-
-### Heroku
-```bash
-git push heroku main
-```
-
-### AWS/DigitalOcean
-```bash
-# Build Docker image
-docker build -t benjamin .
-
-# Run container
-docker run -p 5000:5000 benjamin
-```
-
-### Docker Compose
-```bash
-docker-compose up -d
-```
-
----
-
-## Legal Notice
-
-⚠️ **Important**: This platform requires:
-- Gaming license (varies by jurisdiction)
-- Compliance with local gambling laws
-- AML/KYC procedures
-- Responsible gambling features
-- Data protection compliance (GDPR, etc.)
-
-**Consult legal professionals before deployment.**
-
----
-
-## Contributing
+### Quick Contributing Steps
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes
+4. Add tests (if applicable)
+5. Commit with clear messages: `git commit -m 'Add feature: description'`
+6. Push to your fork: `git push origin feature/your-feature`
+7. Open a Pull Request
+
+### Issue Templates
+- 🐛 [Report a Bug](./.github/ISSUE_TEMPLATE/bug_report.md)
+- ✨ [Request a Feature](./.github/ISSUE_TEMPLATE/feature_request.md)
 
 ---
 
-## License
+## 📝 Version History
 
-MIT License - see LICENSE.md
+**Current Version**: v0.1.0 (2026-07-15)
 
----
-
-## Support
-
-For issues and questions:
-- 📋 GitHub Issues: https://github.com/benjaminshaw11/Benjamin/issues
-- 📧 Email: support@bettingplatform.com
-- 📚 Documentation: See `docs/` folder
+For a complete version history, see [CHANGELOG.md](./CHANGELOG.md)
 
 ---
 
-## Quick Links
+## 🔒 Security
 
-- 🎰 **Betting Platform** - Full-stack gaming platform
-- 📋 **To-Do App** - Productivity tool with local storage
-- 📖 **API Docs** - Complete endpoint documentation
-- 🧪 **Testing Guide** - Fairness verification procedures
-- 💻 **Code Examples** - JavaScript, cURL, and more
+Please report security vulnerabilities responsibly. See [SECURITY.md](./SECURITY.md) for details.
 
 ---
 
-**Built with ❤️ for next-gen betting platforms and productivity tools**
+## 📞 Support
+
+- 📖 **Documentation**: Check the [docs/](./docs/) directory
+- 📋 **Issues**: Open an issue for bugs or feature requests
+- 💬 **Discussions**: Use GitHub Discussions for general questions
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](./LICENSE) file for details.
+
+---
+
+## 👥 Community
+
+This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you agree to uphold this code.
+
+---
+
+## 🎯 Project Goals
+
+- Establish a well-organized development workflow
+- Maintain clear documentation and task tracking
+- Ensure quality code through testing and peer review
+- Foster a collaborative and inclusive community
+
+---
 
 **Last Updated**: 2026-07-15
+**Maintained by**: Benjamin Shaw
