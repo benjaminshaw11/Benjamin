@@ -9,13 +9,13 @@ function Spinner() {
 
 function Toasts({ toasts, remove }) {
   return (
-    <div style={{ position: 'fixed', top: 12, right: 12, zIndex: 9999 }}>
+    <div aria-live="polite" role="status" style={{ position: 'fixed', top: 12, right: 12, zIndex: 9999 }}>
       {toasts.map(t => (
         <div key={t.id} style={{ background: t.type === 'error' ? '#ffdddd' : '#ddffdd', padding: 10, marginBottom: 8, borderRadius: 6, minWidth: 240 }}>
           <strong>{t.title}</strong>
           <div style={{ fontSize: 13 }}>{t.message}</div>
           <div style={{ textAlign: 'right' }}>
-            <button onClick={() => remove(t.id)} style={{ marginTop: 6 }}>Dismiss</button>
+            <button type="button" onClick={() => remove(t.id)} style={{ marginTop: 6 }}>Dismiss</button>
           </div>
         </div>
       ))}
@@ -24,12 +24,49 @@ function Toasts({ toasts, remove }) {
 }
 
 function Modal({ title, children, onClose }) {
+  const modalRef = useRef(null);
+  const previouslyFocused = useRef(null);
+
+  useEffect(() => {
+    previouslyFocused.current = document.activeElement;
+    // focus first focusable element
+    const el = modalRef.current && modalRef.current.querySelector('input,button,textarea,select');
+    if (el && typeof el.focus === 'function') el.focus();
+
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (e.key === 'Tab') {
+        // simple focus trap
+        const focusable = modalRef.current.querySelectorAll('a[href], button:not([disabled]), textarea, input, select');
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      if (previouslyFocused.current && previouslyFocused.current.focus) previouslyFocused.current.focus();
+    };
+  }, [onClose]);
+
   return (
-    <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9998 }}>
-      <div style={{ background: '#fff', padding: 20, borderRadius: 8, maxWidth: 600, width: '90%' }}>
+    <div role="dialog" aria-modal="true" style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9998 }}>
+      <div ref={modalRef} style={{ background: '#fff', padding: 20, borderRadius: 8, maxWidth: 600, width: '90%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0 }}>{title}</h3>
-          <button onClick={onClose}>✕</button>
+          <button type="button" aria-label="Close dialog" onClick={onClose}>✕</button>
         </div>
         <div style={{ marginTop: 12 }}>{children}</div>
       </div>
@@ -189,14 +226,15 @@ export default function AdminDeposits() {
       <h2>Pending Manual Deposits</h2>
 
       <div style={{ marginBottom: 10, display: 'flex', gap: 8 }}>
-        <input placeholder="Search txn id or user email" value={q} onChange={e=>setQ(e.target.value)} style={{ flex: 1, padding: 8 }} />
-        <button onClick={() => { setOffset(0); fetchPage(); }}>Search</button>
+        <label htmlFor="admin-deposits-search" style={{ position: 'absolute', left: -9999 }}>Search</label>
+        <input id="admin-deposits-search" aria-label="Search transactions" placeholder="Search txn id or user email" value={q} onChange={e=>setQ(e.target.value)} style={{ flex: 1, padding: 8 }} />
+        <button type="button" onClick={() => { setOffset(0); fetchPage(); }}>Search</button>
       </div>
 
       <div>
         {loading ? <Spinner /> : (
           rows.length === 0 ? (
-            <div style={{ padding: 20, color: '#666' }}>No pending manual deposits found.</div>
+            <div role="status" style={{ padding: 20, color: '#666' }}>No pending manual deposits found.</div>
           ) : (
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -218,8 +256,8 @@ export default function AdminDeposits() {
                     <td style={{ padding: 8 }}>{fmtAmount(r.amount, r.currency)}</td>
                     <td style={{ padding: 8 }}>{new Date(r.created_at).toLocaleString()}</td>
                     <td style={{ padding: 8 }}>
-                      <button onClick={()=>openApprove(r)}>Approve</button>
-                      <button onClick={()=>openReject(r)} style={{ marginLeft: 8 }}>Reject</button>
+                      <button type="button" aria-label={`Approve ${r.id}`} onClick={()=>openApprove(r)}>Approve</button>
+                      <button type="button" aria-label={`Reject ${r.id}`} onClick={()=>openReject(r)} style={{ marginLeft: 8 }}>Reject</button>
                     </td>
                   </tr>
                 ))}
@@ -230,19 +268,19 @@ export default function AdminDeposits() {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <button onClick={()=>setOffset(Math.max(0, offset - limit))} disabled={page<=1}>Prev</button>
+        <button type="button" onClick={()=>setOffset(Math.max(0, offset - limit))} disabled={page<=1}>Prev</button>
         <span style={{ margin: '0 8px' }}>Page {page} / {totalPages}</span>
-        <button onClick={()=>setOffset(offset + limit)} disabled={page>=totalPages}>Next</button>
+        <button type="button" onClick={()=>setOffset(offset + limit)} disabled={page>=totalPages}>Next</button>
       </div>
 
       {showApproveModal && (
         <Modal title={`Approve transaction ${activeRow && activeRow.id}`} onClose={() => setShowApproveModal(false)}>
           <div>
             <div style={{ marginBottom: 8 }}>Matched bank transaction id (optional)</div>
-            <input value={inputValue} onChange={e=>setInputValue(e.target.value)} style={{ width: '100%', padding: 8 }} />
+            <input aria-label="Matched bank transaction id" value={inputValue} onChange={e=>setInputValue(e.target.value)} style={{ width: '100%', padding: 8 }} />
             <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowApproveModal(false)}>Cancel</button>
-              <button onClick={doApprove}>Approve</button>
+              <button type="button" onClick={() => setShowApproveModal(false)}>Cancel</button>
+              <button type="button" onClick={doApprove}>Approve</button>
             </div>
           </div>
         </Modal>
@@ -252,10 +290,10 @@ export default function AdminDeposits() {
         <Modal title={`Reject transaction ${activeRow && activeRow.id}`} onClose={() => setShowRejectModal(false)}>
           <div>
             <div style={{ marginBottom: 8 }}>Reason for rejection (required)</div>
-            <textarea value={inputValue} onChange={e=>setInputValue(e.target.value)} style={{ width: '100%', padding: 8 }} rows={4} />
+            <textarea aria-label="Rejection reason" value={inputValue} onChange={e=>setInputValue(e.target.value)} style={{ width: '100%', padding: 8 }} rows={4} />
             <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowRejectModal(false)}>Cancel</button>
-              <button onClick={doReject}>Reject</button>
+              <button type="button" onClick={() => setShowRejectModal(false)}>Cancel</button>
+              <button type="button" onClick={doReject}>Reject</button>
             </div>
           </div>
         </Modal>
