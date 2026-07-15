@@ -1,0 +1,91 @@
+# GitHub Repository Configuration
+
+# Auto-merge pull requests
+automerge: false
+
+# Delete branch on merge
+delete_branch_on_merge: true
+
+# Require branches to be up to date before merging
+require_branches_up_to_date: true
+
+# Require status checks to pass before merging
+require_status_checks: true
+
+# Require code reviews
+require_pull_request_reviews: true
+
+# Number of required approving reviews
+required_approving_review_count: 1
+
+# Dismiss stale pull request approvals when new commits are pushed
+dismiss_stale_reviews: true
+
+# Restrict who can push to matching branches
+restrict_who_can_push_to_matching_refs: false
+
+# PR and Issue Templates Location
+pr_template: .github/pull_request_template.md
+issue_template_name_prefix: ""
+
+# Branch Protection Rules
+# Main branch protection rules:
+# - Require status checks to pass
+# - Require code review
+# - Require branches to be up to date
+# - Include administrators in restrictions
+
+# Rules for develop branch:
+# - Require at least 1 code review
+# - Dismiss stale reviews
+# - Require status checks
+
+# Automated Workflows
+workflows:
+  tests: true
+  lint: true
+  release: true
+  auto-assign: true
+
+# Labels Configuration
+labels:
+  - name: "bug"
+    description: "Something isn't working"
+    color: "d73a4a"
+  
+  - name: "enhancement"
+    description: "New feature or request"
+    color: "a2eeef"
+  
+  - name: "documentation"
+    description: "Improvements or additions to documentation"
+    color: "0075ca"
+  
+  - name: "good first issue"
+    description: "Good for newcomers"
+    color: "7057ff"
+  
+  - name: "help wanted"
+    description: "Extra attention is needed"
+    color: "008672"
+  
+  - name: "triage"
+    description: "Needs triage"
+    color: "ffd700"
+
+# Milestones
+milestones:
+  - title: "Project Setup"
+    description: "Initial project configuration and setup"
+    due_date: "2026-07-22"
+  
+  - title: "Code Quality"
+    description: "Testing and performance optimization"
+    due_date: "2026-07-30"
+  
+  - title: "Documentation"
+    description: "Complete project documentation"
+    due_date: "2026-08-10"
+
+# Collaborators & Permissions
+# Configure in GitHub UI under Settings > Collaborators and teams
