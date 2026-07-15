@@ -267,11 +267,9 @@ Total adjusted payout: ₹8,000
 House profit: ₹10,000 - ₹8,000 = ₹2,000 (20% edge)
 ```
 
----
+#### Sports Betting
 
-### Sports Betting
-
-#### Moneyline
+##### Moneyline
 - **Commission/Vig:** 2-4% (built into odds)
 - **Typical Odds:** -110 to +110 (equal competition)
 - **House Edge:** ~4.5% (2% on each side)
@@ -292,7 +290,7 @@ With proper balancing (hedge), house captures 2-4% of all action
 On ₹100,000 daily moneyline bets: ₹2,000-₹4,000 profit
 ```
 
-#### Spread Betting
+##### Spread Betting
 - **Commission:** 2-3%
 - **Typical Spread:** -3.5 to +3.5 points
 - **House Edge:** ~4.5%
@@ -311,17 +309,15 @@ Total exposed risk: ₹19,000
 House advantage: ₹1,000 (5%)
 ```
 
-#### Totals/Over-Under
+##### Totals/Over-Under
 - **Commission:** 2-3%
 - **Typical Total:** 45.5 points
 - **House Edge:** ~4.5%
 - **House Profit per ₹100 bet:** ₹2-3
 
----
+#### Prediction Markets
 
-### Prediction Markets
-
-#### Binary YES/NO Betting
+##### Binary YES/NO Betting
 - **Pool-Based Odds:** Dynamic based on betting pool
 - **House Commission:** 2-5% rake on winning pool
 - **House Edge:** 2-5% on total volume
@@ -427,7 +423,7 @@ Annual revenue: ₹9,360,000 × 12 = ₹112,320,000
 **Total: ₹249,600/day × 30 = ₹7,488,000/month**
 
 **Additional Revenue Streams (Monthly):**
-- VIP Monthly Bonuses Given: ₹400 users × ₹2,000 = ₹800,000 (cost)
+- VIP Monthly Bonuses Given: 400 users × ₹2,000 = ₹800,000 (cost)
 - Bonus Wagering Multiplier (5x): ₹800,000 × 5 = ₹4,000,000 extra wagers
 - Extra house edge from bonuses: ₹4,000,000 × 6.5% = ₹260,000
 - Affiliate Commissions (20% of avg affiliate tier): ₹1,500,000 × 2% = ₹30,000 (cost)
@@ -505,7 +501,7 @@ Annual: ₹189,000,000 × 12 = ₹2,268,000,000
 
 ---
 
-## 🎯 Break-Even Analysis
+## 🏁 Break-Even Analysis
 
 ### Minimum Daily Wagers to Break Even
 
@@ -870,7 +866,7 @@ ROI: 3.75x in first month
 
 ---
 
-## 📊 Summary: Revenue Model
+## 📋 Summary: Revenue Model
 
 | Metric | Value |
 |--------|-------|
@@ -893,7 +889,7 @@ ROI: 3.75x in first month
 
 ---
 
-## 🎯 Action Items for Revenue Optimization
+## 🏁 Action Items for Revenue Optimization
 
 1. **Implement Game Analytics** - Track house edge by game, adjust payouts weekly
 2. **A/B Test Bonus Structures** - Compare current vs. optimized bonus ROI
