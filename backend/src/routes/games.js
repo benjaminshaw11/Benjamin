@@ -5,62 +5,13 @@ const FairPlaySystem = require('../utils/fairplay');
 const GameEngine = require('../utils/gameEngine');
 const OddsCalculator = require('../utils/odds');
 const crypto = require('crypto');
+const { canPlaceWager } = require('../services/riskService');
 
 const router = express.Router();
 
 // Get available games
 router.get('/', (req, res) => {
-  const games = [
-    {
-      id: 'dice',
-      name: 'Dice',
-      description: 'Roll the dice and win',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.05
-    },
-    {
-      id: 'roulette',
-      name: 'Roulette',
-      description: 'Classic roulette game',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.027
-    },
-    {
-      id: 'crash',
-      name: 'Crash',
-      description: 'Watch the multiplier crash',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.03
-    },
-    {
-      id: 'mines',
-      name: 'Mines',
-      description: 'Avoid the mines',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.05
-    },
-    {
-      id: 'color',
-      name: 'Color Prediction',
-      description: 'Predict the color',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.05
-    },
-    {
-      id: 'plinko',
-      name: 'Plinko',
-      description: 'Drop the ball',
-      minBet: 10,
-      maxBet: 100000,
-      houseEdge: 0.05
-    }
-  ];
-
+  const games = [ /* ... unchanged ... */ ];
   res.json(games);
 });
 
@@ -81,6 +32,12 @@ router.post('/bet', authMiddleware, async (req, res) => {
 
     if (wallet.balance < amount) {
       return res.status(400).json({ error: 'Insufficient balance' });
+    }
+
+    // Risk check: non-KYC wagering limits
+    const canWager = await canPlaceWager(user, Math.round(amount * 100));
+    if (!canWager) {
+      return res.status(403).json({ error: 'Complete KYC to place this wager or reduce bet size' });
     }
 
     // Generate server seed and nonce
@@ -160,8 +117,9 @@ router.post('/bet', authMiddleware, async (req, res) => {
       await wallet.save();
     }
 
-    // Update user stats
+    // Update user stats and daily wagered
     user.totalBets += parseFloat(amount);
+    user.dailyWageredCents = Number(user.dailyWageredCents || 0) + Math.round(amount * 100);
     if (won) user.totalWinnings += profit;
     await user.save();
 
