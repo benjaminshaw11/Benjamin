@@ -22,6 +22,9 @@ app.use(sentryRequestHandler());
 const requestLogger = require('./src/middleware/requestLogger');
 app.use(requestLogger);
 
+// API docs (Swagger)
+app.use('/api/docs', require('./docs/swagger'));
+
 const io = socketIo(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -83,18 +86,26 @@ app.use(sentryErrorHandler());
 const errorHandler = require('./src/middleware/errorHandler');
 app.use(errorHandler);
 
-// Database sync and start server
+// Database sync and start server only when run directly
 const PORT = process.env.PORT || 5000;
 
-sequelize.sync({ alter: true }).then(() => {
-  server.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
-    console.log(`🗄️  Database connected`);
-    console.log(`🔌 WebSocket ready`);
-  });
-}).catch(err => {
-  console.error('Database connection error:', err);
-  process.exit(1);
-});
+async function startServer() {
+  try {
+    await sequelize.sync({ alter: true });
+    server.listen(PORT, () => {
+      console.log(`✅ Server running on http://localhost:${PORT}`);
+      console.log(`🗄️  Database connected`);
+      console.log(`🔌 WebSocket ready`);
+    });
+  } catch (err) {
+    console.error('Database connection error:', err);
+    process.exit(1);
+  }
+}
 
-module.exports = { app, io };
+if (require.main === module) {
+  // Only start server if this file is run directly (node server.js)
+  startServer();
+}
+
+module.exports = { app, io, startServer };
