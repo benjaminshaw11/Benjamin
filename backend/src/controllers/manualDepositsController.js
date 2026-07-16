@@ -2,18 +2,6 @@ const { ManualDeposit, ManualDepositMatch, AdminAuditLog, LedgerEntry, sequelize
 const ledgerService = require('../services/ledgerService');
 const { canAutoApproveWithoutKyc } = require('../services/kycPolicy');
 
-async function isUserKycApproved(userId) {
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) return false;
-    // permissive if no kyc field
-    if (user.kycStatus === undefined) return true;
-    return (user.kycStatus === 'approved' || user.kycStatus === 'verified');
-  } catch (e) {
-    return true;
-  }
-}
-
 async function listPending(req, res) {
   const limit = parseInt(req.query.limit, 10) || 50;
   const offset = parseInt(req.query.offset, 10) || 0;
@@ -50,21 +38,16 @@ async function approve(req, res) {
   const deposit = await ManualDeposit.findByPk(depositId);
   if (!deposit || deposit.status !== 'pending') return res.status(400).json({ error: 'Invalid deposit' });
 
-  // Load user
   const user = await User.findByPk(deposit.userId);
   if (!user) return res.status(400).json({ error: 'User not found' });
 
-  // Decide if we can auto-approve without full KYC
-  const autoOk = await canAutoApproveWithoutKyc(user, Number(deposit.amountCents || 0));
-
-  if (!autoOk && !await isUserKycApproved(deposit.userId)) {
-    return res.status(403).json({ error: 'User KYC required' });
-  }
+  const autoOk = await canAutoApproveWithoutKyc(user, deposit.amountCents);
+  if (!autoOk && !user.kycVerified) return res.status(403).json({ error: 'User KYC required' });
 
   try {
     await sequelize.transaction(async (tx) => {
-      // create ledger credit (double entry inside ledgerService)
-      await ledgerService.createCredit({ userId: deposit.userId, amountCents: deposit.amountCents, relatedDepositId: deposit.id, metadata: { autoBypass: !!autoOk }, transaction: tx });
+      // create ledger credit (double-entry handled in ledgerService)
+      await ledgerService.createCredit({ userId: deposit.userId, amountCents: deposit.amountCents, relatedDepositId: deposit.id, transaction: tx });
 
       // mark as approved
       await deposit.update({ status: 'approved' }, { transaction: tx });
@@ -74,22 +57,27 @@ async function approve(req, res) {
         await ManualDepositMatch.create({ manualDepositId: deposit.id, bankTxnId: matchedBankTxnId, amountCents: deposit.amountCents, matchedAt: new Date(), matchedByAdminId: adminId }, { transaction: tx });
       }
 
-      // If auto-approved, increment user's cumulativeDepositsCents and set kycBypass flag
-      if (autoOk) {
-        const prevCum = Number(user.cumulativeDepositsCents || 0);
-        const newCum = prevCum + Number(deposit.amountCents || 0);
-        user.cumulativeDepositsCents = newCum;
-        user.kycBypass = true;
-        await user.save({ transaction: tx });
+      // update user's cumulative deposits (stored in rupees decimal)
+      const addRupees = (Number(deposit.amountCents) / 100).toFixed(2);
+      const newTotal = (Number(user.totalDeposits || 0) + Number(addRupees)).toFixed(2);
+      await user.update({ totalDeposits: newTotal }, { transaction: tx });
+
+      // if autoOk and user not fully KYC'd, mark needsKycBeforeWithdrawal
+      const auditMeta = {};
+      if (autoOk && !user.kycVerified) {
+        await user.update({ needsKycBeforeWithdrawal: true }, { transaction: tx });
+        auditMeta.autoKycBypass = true;
+        auditMeta.autoBy = 'system';
       }
 
-      // audit log (include idempotency_key and bypass metadata)
-      await AdminAuditLog.create({ adminId, action: 'approve', targetType: 'manual_deposit', targetId: deposit.id, idempotencyKey, metadata: { autoBypass: !!autoOk } }, { transaction: tx });
+      // audit log
+      await AdminAuditLog.create({ adminId, action: 'approve', targetType: 'manual_deposit', targetId: deposit.id, idempotencyKey, metadata: auditMeta }, { transaction: tx });
     });
 
-    // TODO: emit socket event to user about credited funds
+    // notify / emit (optional)
+    // TODO: emit socket event to user
 
-    return res.json({ ok: true, autoApproved: autoOk });
+    return res.json({ ok: true });
   } catch (e) {
     console.error('approve error', e);
     return res.status(500).json({ error: 'Approve failed' });
@@ -114,7 +102,7 @@ async function reject(req, res) {
       await AdminAuditLog.create({ adminId, action: 'reject', targetType: 'manual_deposit', targetId: deposit.id, reason, idempotencyKey }, { transaction: tx });
     });
 
-    // TODO: notify user about rejection
+    // notify user
     return res.json({ ok: true });
   } catch (e) {
     console.error('reject error', e);
