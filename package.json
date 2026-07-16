@@ -1,0 +1,11 @@
+{
+  "name": "benjamin-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {}
+}
