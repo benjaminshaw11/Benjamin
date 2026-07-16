@@ -1,16 +1,14 @@
+// Simple reconciliation worker with better matching
 const fs = require('fs');
-const path = require('path');
 const csv = require('csv-parse/lib/sync');
-const { ManualDeposit, ManualDepositMatch, sequelize } = require('../models');
+const { ManualDeposit, ManualDepositMatch } = require('../models');
 
-function scoreMatch(candidate, record) {
-  // Simple scoring: exact amount match = +50, remitter/account match = +30, time proximity = +20
-  let score = 0;
-  if (Number(candidate.amountCents) === Number(record.amountCents)) score += 50;
-  if (record.from_account && candidate.remitterAccount && record.from_account === candidate.remitterAccount) score += 30;
-  if (record.remitter_name && candidate.remitterName && record.remitter_name.toLowerCase().includes((candidate.remitterName || '').toLowerCase())) score += 20;
-  // time proximity not implemented in record (CSV must contain timestamp)
-  return Math.min(100, score);
+// helper similarity check (case-insensitive includes)
+function similar(a = '', b = '') {
+  if (!a || !b) return false;
+  const A = a.toString().toLowerCase();
+  const B = b.toString().toLowerCase();
+  return A.includes(B) || B.includes(A);
 }
 
 async function reconcileCsv(filePath) {
@@ -18,18 +16,33 @@ async function reconcileCsv(filePath) {
   const records = csv(content, { columns: true, skip_empty_lines: true });
 
   for (const rec of records) {
+    // expected fields: utr, amount, from_account, to_account, timestamp, remitter
     const amountCents = Math.round(Number(rec.amount) * 100);
-    // Find pending deposits within small window by amount
-    const candidates = await ManualDeposit.findAll({ where: { amountCents, status: 'pending' }, limit: 10 });
-    if (!candidates || candidates.length === 0) continue;
-
+    const candidates = await ManualDeposit.findAll({ where: { status: 'pending' }, limit: 50, order: [['createdAt', 'ASC']] });
     // score candidates
-    for (const c of candidates) {
-      const score = scoreMatch(c, { amountCents, from_account: rec.from_account, remitter_name: rec.remitter_name });
-      // create a suggestion only if score >= 40
-      if (score >= 40) {
-        await ManualDepositMatch.create({ manualDepositId: c.id, bankTxnId: rec.utr || rec.txn_id, bankAccount: rec.from_account || rec.to_account, amountCents, matchConfidence: score });
+    const scored = candidates.map(c => {
+      let score = 0;
+      if (Number(c.amountCents) === amountCents) score += 50;
+      // time window check: within 24h
+      if (rec.timestamp && c.createdAt) {
+        const dt = Math.abs(new Date(rec.timestamp) - new Date(c.createdAt));
+        if (dt < 1000 * 60 * 60 * 24) score += 20;
       }
+      if (similar(rec.remitter, c.remitterName)) score += 20;
+      if (similar(rec.from_account, c.remitterAccount)) score += 30;
+      return { candidate: c, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    const top = scored[0];
+    if (top && top.score >= 70) {
+      await ManualDepositMatch.create({ manualDepositId: top.candidate.id, bankTxnId: rec.utr || rec.txn_id, bankAccount: rec.from_account || rec.to_account, amountCents, matchedAt: new Date(), matchConfidence: top.score });
+    } else if (top && top.score > 30) {
+      // create lower-confidence suggestion
+      await ManualDepositMatch.create({ manualDepositId: top.candidate.id, bankTxnId: rec.utr || rec.txn_id, bankAccount: rec.from_account || rec.to_account, amountCents, matchedAt: new Date(), matchConfidence: top.score });
+    } else {
+      // no good candidate; skip or log
+      console.log('No match for record', rec);
     }
   }
 }

@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { OtpCode, User } = require('../models');
 
 const DEFAULT_TTL_MS = Number(process.env.OTP_TTL_MS || 5 * 60 * 1000); // 5 minutes
+const MAX_VERIFY_ATTEMPTS = Number(process.env.OTP_MAX_VERIFY_ATTEMPTS || 5);
 
 function hashOtp(phone, code) {
   // HMAC with server secret
@@ -36,16 +37,33 @@ async function sendOtp(phone) {
   return { ok: true, expiresAt };
 }
 
-async function verifyOtp(phone, code) {
+async function verifyOtp(phone, code, ip) {
   const now = new Date();
   const codeHash = hashOtp(phone, code);
 
-  // Find latest non-expired matching hash
-  const otp = await OtpCode.findOne({ where: { phone, codeHash }, order: [['createdAt', 'DESC']] });
+  // Find latest non-expired OTP for this phone
+  const otp = await OtpCode.findOne({ where: { phone }, order: [['createdAt', 'DESC']] });
   if (!otp) return { ok: false, reason: 'invalid' };
   if (otp.expiresAt < now) return { ok: false, reason: 'expired' };
 
-  // mark consumed by deleting (or you can keep for audit)
+  // Check attempts
+  if (otp.attempts >= MAX_VERIFY_ATTEMPTS) {
+    await otp.destroy();
+    return { ok: false, reason: 'too_many_attempts' };
+  }
+
+  // Verify
+  if (otp.codeHash !== codeHash) {
+    otp.attempts = otp.attempts + 1;
+    await otp.save();
+    if (otp.attempts >= MAX_VERIFY_ATTEMPTS) {
+      await otp.destroy();
+      return { ok: false, reason: 'too_many_attempts' };
+    }
+    return { ok: false, reason: 'invalid' };
+  }
+
+  // Valid — consume record
   await otp.destroy();
 
   return { ok: true };
@@ -69,4 +87,4 @@ async function markUserPhoneVerifiedIfAuthenticated(req, phone) {
   }
 }
 
-module.exports = { sendOtp, verifyOtp };
+module.exports = { sendOtp, verifyOtp, markUserPhoneVerifiedIfAuthenticated };
