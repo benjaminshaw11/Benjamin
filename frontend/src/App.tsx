@@ -15,7 +15,7 @@ import Admin from './pages/Admin';
 import DiceGame from './pages/games/DiceGame';
 
 function App() {
-  const { isAuthenticated, setUser } = useAuthStore();
+  const { isAuthenticated, setUser, logout } = useAuthStore();
   const { setBalance } = useWalletStore();
 
   useEffect(() => {
@@ -23,16 +23,27 @@ function App() {
       if (isAuthenticated) {
         try {
           const userResponse = await authAPI.me();
-          setUser(userResponse.data.user);
-          setBalance(parseFloat(userResponse.data.wallet.balance));
-        } catch (err) {
+          setUser(userResponse.data.user || null);
+
+          // wallet may be missing; guard parsing
+          const balanceVal = userResponse.data?.wallet?.balance;
+          if (typeof balanceVal !== 'undefined') {
+            const parsed = parseFloat(balanceVal);
+            if (!Number.isNaN(parsed)) setBalance(parsed);
+          }
+        } catch (err: any) {
           console.error('Failed to load user data', err);
+          // If unauthorized clear state and redirect to login
+          if (err?.response?.status === 401) {
+            logout();
+          }
         }
       }
     };
 
     loadUserData();
-  }, [isAuthenticated]);
+    // include setters so React Hook linter is happy
+  }, [isAuthenticated, setUser, setBalance, logout]);
 
   return (
     <Router>

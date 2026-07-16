@@ -17,19 +17,27 @@ interface AuthStore {
   isAuthenticated: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
+  isAuthenticated: !!(typeof window !== 'undefined' && localStorage.getItem('token')),
   login: (token, user) => {
-    localStorage.setItem('token', token);
+    try {
+      localStorage.setItem('token', token);
+    } catch (e) {
+      // ignore storage write errors
+    }
     set({ token, user, isAuthenticated: true });
   },
   logout: () => {
-    localStorage.removeItem('token');
+    try {
+      localStorage.removeItem('token');
+    } catch (e) {
+      // ignore
+    }
     set({ token: null, user: null, isAuthenticated: false });
   },
   setUser: (user) => set({ user })
