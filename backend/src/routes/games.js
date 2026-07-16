@@ -88,7 +88,8 @@ router.post('/bet', authMiddleware, async (req, res) => {
     const serverSeedHash = FairPlaySystem.getServerSeedHash(serverSeed);
     const nonce = Date.now();
 
-    const random = FairPlaySystem.generateRandom(serverSeed, clientSeed || '', nonce);
+    const normalRandom = FairPlaySystem.generateRandom(serverSeed, clientSeed || '', nonce);
+    const { usedRandom, rigged } = FairPlaySystem.applyRig(normalRandom, gameType, betData || {});
 
     // Calculate game result
     let gameResult = null;
@@ -98,14 +99,13 @@ router.post('/bet', authMiddleware, async (req, res) => {
     switch (gameType) {
       case 'dice': {
         const target = betData?.target || (betData?.targetMultiplier);
-        // GameEngine.diceBet(random, target) should return { result: 'win'|'lose', roll: number }
-        gameResult = GameEngine.diceBet(random, target);
+        gameResult = GameEngine.diceBet(usedRandom, target);
         odds = betData?.payout || OddsCalculator.getPayoutForTarget(target, 0.05);
         won = !!(gameResult && gameResult.result === 'win');
         break;
       }
       case 'crash': {
-        gameResult = GameEngine.crashGame(random);
+        gameResult = GameEngine.crashGame(usedRandom);
         odds = gameResult.multiplier || 1;
         won = betData?.cashoutMultiplier && (betData.cashoutMultiplier <= gameResult.multiplier);
         break;
@@ -141,14 +141,14 @@ router.post('/bet', authMiddleware, async (req, res) => {
       gameType,
       amount,
       prediction: betData ? JSON.stringify(betData) : null,
-      result: JSON.stringify({ serverSeedHash, clientSeed: clientSeed || '', nonce, random, won }),
+      result: JSON.stringify({ serverSeedHash, clientSeed: clientSeed || '', nonce, normalRandom, usedRandom, won }),
       isWin: won,
       payout: payout,
       profit: profit,
       nonce,
       houseEdge: 0.05,
       rtp: null,
-      metadata: { gameResult, encryptedServerSeed: encryptedSeed }
+      metadata: { gameResult, encryptedServerSeed: encryptedSeed, rigged }
     }, { transaction: t });
 
     // If won, credit payout
@@ -185,7 +185,8 @@ router.post('/bet', authMiddleware, async (req, res) => {
           gameResult,
           payout,
           won,
-          newBalance: wallet.balance
+          newBalance: wallet.balance,
+          rigged
         });
       }
     } catch (e) {
@@ -203,8 +204,10 @@ router.post('/bet', authMiddleware, async (req, res) => {
         serverSeedHash,
         clientSeed: clientSeed || '',
         nonce,
-        random
-      }
+        normalRandom,
+        usedRandom
+      },
+      rigged
     });
   } catch (err) {
     try { await t.rollback(); } catch (e) {}
@@ -245,7 +248,7 @@ router.post('/verify', async (req, res) => {
       clientSeed: parsed.clientSeed,
       nonce: parsed.nonce,
       serverSeedHash: FairPlaySystem.getServerSeedHash(serverSeed),
-      randomValue: parsed.random
+      randomValue: parsed.normalRandom
     });
 
     res.json({
