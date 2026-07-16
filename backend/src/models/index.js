@@ -11,6 +11,7 @@ const ManualDeposit = require('./ManualDeposit')(sequelize);
 const ManualDepositMatch = require('./ManualDepositMatch')(sequelize);
 const LedgerEntry = require('./LedgerEntry')(sequelize);
 const AdminAuditLog = require('./AdminAuditLog')(sequelize);
+const OtpCode = require('./OtpCode')(sequelize);
 
 // Associations
 User.hasOne(Wallet, { foreignKey: 'userId', onDelete: 'CASCADE' });
@@ -38,6 +39,9 @@ ManualDepositMatch.belongsTo(ManualDeposit);
 User.hasMany(LedgerEntry, { foreignKey: 'userId' });
 LedgerEntry.belongsTo(User);
 
+// OTP association (optional)
+User.hasMany(OtpCode, { foreignKey: 'phone', sourceKey: 'phone' });
+
 module.exports = {
   sequelize,
   User,
@@ -49,5 +53,6 @@ module.exports = {
   ManualDeposit,
   ManualDepositMatch,
   LedgerEntry,
-  AdminAuditLog
+  AdminAuditLog,
+  OtpCode
 };
