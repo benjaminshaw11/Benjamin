@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -10,9 +9,18 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// Apply security middlewares (helmet, rate-limit, cors, sanitizers)
+// Security middlewares
 const { applySecurity } = require('./src/middleware/security');
 applySecurity(app);
+
+// Sentry (optional)
+const { initSentry, requestHandler: sentryRequestHandler, errorHandler: sentryErrorHandler } = require('./src/middleware/sentry');
+initSentry();
+app.use(sentryRequestHandler());
+
+// Request logging
+const requestLogger = require('./src/middleware/requestLogger');
+app.use(requestLogger);
 
 const io = socketIo(server, {
   cors: {
@@ -37,6 +45,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date() });
 });
 
+// Metrics (Prometheus)
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
+
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', client.register.contentType);
+    res.end(await client.register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
+
 // WebSocket events
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
@@ -53,6 +75,9 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
+// Sentry error handler (if enabled)
+app.use(sentryErrorHandler());
 
 // Centralized error handler
 const errorHandler = require('./src/middleware/errorHandler');
