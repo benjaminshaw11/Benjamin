@@ -30,13 +30,30 @@ class OddsCalculator {
   }
 
   /**
+   * Get the configured maximum multiplier (decimal odds cap)
+   * @returns {number}
+   */
+  static getMaxMultiplier() {
+    const v = process.env.MAX_MULTIPLIER || '2.0';
+    const parsed = parseFloat(v);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 2.0;
+  }
+
+  /**
    * Calculate payout
    * @param {number} amount
-   * @param {number} odds
+   * @param {number} odds (decimal multiplier, e.g. 1.98)
    * @returns {number}
    */
   static calculatePayout(amount, odds) {
-    return Math.round(amount * odds * 100) / 100;
+    try {
+      const maxMultiplier = this.getMaxMultiplier();
+      const cappedOdds = Math.min(odds, maxMultiplier);
+      return Math.round(amount * cappedOdds * 100) / 100;
+    } catch (e) {
+      // fallback to simple multiply
+      return Math.round(amount * odds * 100) / 100;
+    }
   }
 
   /**
