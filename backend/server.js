@@ -9,6 +9,11 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Apply security middlewares (helmet, rate-limit, cors, sanitizers)
+const { applySecurity } = require('./src/middleware/security');
+applySecurity(app);
+
 const io = socketIo(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -17,7 +22,6 @@ const io = socketIo(server, {
 });
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,6 +53,10 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
+// Centralized error handler
+const errorHandler = require('./src/middleware/errorHandler');
+app.use(errorHandler);
 
 // Database sync and start server
 const PORT = process.env.PORT || 5000;

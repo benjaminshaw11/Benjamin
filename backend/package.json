@@ -26,7 +26,12 @@
     "redis": "^4.6.11",
     "cors": "^2.8.5",
     "express-validator": "^7.0.0",
-    "crypto": "^1.0.1"
+    "crypto": "^1.0.1",
+    "helmet": "^6.0.1",
+    "express-rate-limit": "^6.7.0",
+    "xss-clean": "^0.1.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "hpp": "^0.2.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
