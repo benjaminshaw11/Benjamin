@@ -2,20 +2,21 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { User, Wallet } = require('../models');
 const { authMiddleware } = require('../middleware/auth');
+const otpService = require('../services/otpService');
 
 const router = express.Router();
 
-// Register
+// Register (extended to accept phone)
 router.post('/register', async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const { email, username, password, phone } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    const user = await User.create({ email, username, password });
+    const user = await User.create({ email, username, password, phone });
     
     // Create wallet
     await Wallet.create({ userId: user.id, currency: 'INR' });
@@ -63,6 +64,40 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Send OTP (requires auth)
+router.post('/send-otp', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.phone) return res.status(400).json({ error: 'No phone number present' });
+
+    otpService.sendOtp(user.phone);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Verify OTP (requires auth)
+router.post('/verify-otp', authMiddleware, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.phone) return res.status(400).json({ error: 'No phone number present' });
+
+    const ok = otpService.verifyOtp(user.phone, code);
+    if (!ok) return res.status(400).json({ error: 'Invalid or expired code' });
+
+    user.phoneVerified = true;
+    await user.save();
+
+    res.json({ ok: true, phoneVerified: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get current user
 router.get('/me', authMiddleware, async (req, res) => {
   try {
@@ -75,6 +110,8 @@ router.get('/me', authMiddleware, async (req, res) => {
         email: user.email,
         username: user.username,
         kycVerified: user.kycVerified,
+        kycStatus: user.kycStatus,
+        phoneVerified: user.phoneVerified,
         status: user.status,
         totalDeposits: user.totalDeposits,
         totalWithdrawals: user.totalWithdrawals,

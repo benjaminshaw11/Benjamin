@@ -23,9 +23,20 @@ module.exports = (sequelize) => {
       allowNull: false
     },
     phone: DataTypes.STRING,
+    phoneVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: 'phone_verified'
+    },
     kycVerified: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
+      field: 'kyc_verified'
+    },
+    needsKycBeforeWithdrawal: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: 'needs_kyc_before_withdrawal'
     },
     status: {
       type: DataTypes.ENUM('active', 'suspended', 'banned'),
@@ -33,19 +44,23 @@ module.exports = (sequelize) => {
     },
     totalDeposits: {
       type: DataTypes.DECIMAL(15, 2),
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_deposits'
     },
     totalWithdrawals: {
       type: DataTypes.DECIMAL(15, 2),
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_withdrawals'
     },
     totalBets: {
       type: DataTypes.DECIMAL(15, 2),
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_bets'
     },
     totalWinnings: {
       type: DataTypes.DECIMAL(15, 2),
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_winnings'
     }
   }, {
     hooks: {
