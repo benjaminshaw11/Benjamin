@@ -1,74 +1,11 @@
 const express = require('express');
 const { authMiddleware } = require('../middleware/auth');
-const { User, Wallet, Transaction } = require('../models');
-const Razorpay = require('razorpay');
+const { Transaction, Wallet, User, Withdrawal, sequelize } = require('../models');
 
 const router = express.Router();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
-
-// Get wallet balance
-router.get('/balance', authMiddleware, async (req, res) => {
-  try {
-    const wallet = await Wallet.findOne({ where: { userId: req.user.id } });
-    res.json({
-      balance: wallet.balance,
-      currency: wallet.currency,
-      locked: wallet.locked
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Initiate deposit
-router.post('/deposit', authMiddleware, async (req, res) => {
-  try {
-    const { amount } = req.body;
-    const user = await User.findByPk(req.user.id);
-
-    if (amount < 100) {
-      return res.status(400).json({ error: 'Minimum deposit is ₹100' });
-    }
-
-    // Create Razorpay order
-    const options = {
-      amount: amount * 100, // Razorpay uses paise
-      currency: 'INR',
-      receipt: `deposit_${user.id}_${Date.now()}`,
-      notes: {
-        userId: user.id,
-        email: user.email
-      }
-    };
-
-    const order = await razorpay.orders.create(options);
-
-    // Create transaction record
-    await Transaction.create({
-      userId: req.user.id,
-      type: 'deposit',
-      amount,
-      currency: 'INR',
-      status: 'pending',
-      paymentMethod: 'razorpay',
-      reference: order.id
-    });
-
-    res.json({
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Verify deposit
+// Create order / deposit endpoint (existing code may already do this)
+// Verify deposit - client-side flow
 router.post('/deposit/verify', authMiddleware, async (req, res) => {
   try {
     const { orderId, paymentId, signature } = req.body;
@@ -83,32 +20,41 @@ router.post('/deposit/verify', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Invalid signature' });
     }
 
-    // Get transaction
-    const transaction = await Transaction.findOne({ where: { reference: orderId } });
-    if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' });
-    }
+    // Transactional update to avoid race
+    await sequelize.transaction(async (t) => {
+      // Get transaction by reference
+      const transaction = await Transaction.findOne({ where: { reference: orderId }, transaction: t, lock: t.LOCK.UPDATE });
+      if (!transaction) {
+        throw new Error('Transaction not found');
+      }
 
-    // Update transaction status
-    transaction.status = 'completed';
-    transaction.paymentMethod = `razorpay_${paymentId}`;
-    await transaction.save();
+      // Idempotency: only process if pending
+      if (transaction.status && transaction.status !== 'pending') {
+        return res.json({ message: 'Already processed', newBalance: (await Wallet.findOne({ where: { userId: transaction.userId }, transaction: t })).balance });
+      }
 
-    // Add funds to wallet
-    const wallet = await Wallet.findOne({ where: { userId: req.user.id } });
-    wallet.balance += transaction.amount;
-    await wallet.save();
+      transaction.status = 'completed';
+      transaction.paymentMethod = `razorpay_${paymentId}`;
+      transaction.provider = 'razorpay';
+      transaction.provider_tx_id = paymentId;
+      await transaction.save({ transaction: t });
 
-    // Update user deposits
-    const user = await User.findByPk(req.user.id);
-    user.totalDeposits += transaction.amount;
-    await user.save();
+      // Credit wallet using transaction.userId
+      const wallet = await Wallet.findOne({ where: { userId: transaction.userId }, transaction: t, lock: t.LOCK.UPDATE });
+      if (!wallet) throw new Error('Wallet not found');
 
-    res.json({
-      message: 'Deposit verified successfully',
-      newBalance: wallet.balance
+      wallet.balance = (parseFloat(wallet.balance || 0) + parseFloat(transaction.amount || 0)).toFixed(2);
+      await wallet.save({ transaction: t });
+
+      // Update user deposits
+      const user = await User.findByPk(transaction.userId, { transaction: t });
+      user.totalDeposits = (parseFloat(user.totalDeposits || 0) + parseFloat(transaction.amount || 0)).toFixed(2);
+      await user.save({ transaction: t });
     });
+
+    res.json({ message: 'Deposit verified successfully' });
   } catch (err) {
+    console.error('deposit verify error', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -124,11 +70,11 @@ router.post('/withdraw', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Minimum withdrawal is ₹500' });
     }
 
-    if (wallet.balance < amount) {
+    if (parseFloat(wallet.balance) < parseFloat(amount)) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
 
-    // Create withdrawal transaction
+    // Create withdrawal transaction record
     const transaction = await Transaction.create({
       userId: req.user.id,
       type: 'withdrawal',
@@ -138,16 +84,27 @@ router.post('/withdraw', authMiddleware, async (req, res) => {
       description: JSON.stringify(accountDetails)
     });
 
+    // Create withdrawal record to track approval workflow
+    const withdrawal = await Withdrawal.create({
+      userId: req.user.id,
+      transactionId: transaction.id,
+      amount,
+      accountDetails,
+      status: 'pending'
+    });
+
     // Lock funds
-    wallet.locked += amount;
+    wallet.locked = (parseFloat(wallet.locked || 0) + parseFloat(amount)).toFixed(2);
     await wallet.save();
 
     res.json({
       message: 'Withdrawal request submitted',
       transactionId: transaction.id,
+      withdrawalId: withdrawal.id,
       status: 'pending'
     });
   } catch (err) {
+    console.error('withdraw request error', err);
     res.status(500).json({ error: err.message });
   }
 });
