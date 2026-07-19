@@ -7,6 +7,7 @@ const Bet = require('./Bet')(sequelize);
 const Transaction = require('./Transaction')(sequelize);
 const PredictionMarket = require('./PredictionMarket')(sequelize);
 const PredictionBet = require('./PredictionBet')(sequelize);
+const GameCatalog = require('./GameCatalog')(sequelize);
 
 // Associations
 User.hasOne(Wallet, { foreignKey: 'userId', onDelete: 'CASCADE' });
@@ -19,7 +20,7 @@ User.hasMany(Transaction, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Transaction.belongsTo(User);
 
 User.hasMany(PredictionBet, { foreignKey: 'userId', onDelete: 'CASCADE' });
-PredictionBet.belongsTo(User);
+PredictionBet.belongsTo(PredictionMarket);
 
 PredictionMarket.hasMany(PredictionBet, { foreignKey: 'marketId', onDelete: 'CASCADE' });
 PredictionBet.belongsTo(PredictionMarket);
@@ -31,5 +32,6 @@ module.exports = {
   Bet,
   Transaction,
   PredictionMarket,
-  PredictionBet
+  PredictionBet,
+  GameCatalog
 };
